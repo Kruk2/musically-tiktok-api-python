@@ -178,8 +178,9 @@ class Api():
                                        session=self._get_login_cookies())
         return data.json()
 
-    def list_hashtag(self, cid, count=20, offset=0):
-        url = self.api_url + f"aweme/v1/challenge/aweme/?ch_id={cid}&count={count}&offset={offset}&max_cursor=0&" \
+    def list_hashtag(self, cid, count=20):
+        # offset does not seem to do anything, probably remove it
+        url = self.api_url + f"aweme/v1/challenge/aweme/?ch_id={cid}&count={count}&offset=0&max_cursor=0&" \
             f"type=5&query_type=0&is_cold_start=1&pull_type=1&" + self.helper.query(
             self.helper.default_variable(self.global_variable))
         data = self.helper.request_get(url, session=self._get_login_cookies())
