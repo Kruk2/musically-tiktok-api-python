@@ -66,25 +66,22 @@ class Api():
     def home_list(self, user_data={}):
         url = self.api_url + "aweme/v1/feed/?count=20&offset=0&max_cursor=0&type=0&is_cold_start=1&pull_type=1&" + self.helper.query(
             self.helper.default_variable(self.global_variable))
-        if (user_data.__len__() > 0):
-            data = self.helper.request_get(self, url, session=self.active_user['cookies'])
-        else:
-            data = self.helper.request_get(self, url)
+        data = self.helper.request_get(url, session=self.active_user['cookies'] if len(user_data) > 0 else {})
         return data.json()
 
     def search_user(self, text='teamtolga', session={}):
         url = self.api_url + "aweme/v1/discover/search/?cursor=0&keyword=" + text + "&count=10&type=1&hot_search=0&" + self.helper.query(
             self.helper.default_variable(self.global_variable))
         if (session.__len__() > 0):
-            data = self.helper.request_get(self, url, session=session)
+            data = self.helper.request_get(url, session=session)
         else:
-            data = self.helper.request_get(self, url)
+            data = self.helper.request_get(url)
         return data.json()
 
     def like_post(self, aweme_id=1, type='1', session={}):
         url = self.api_url + "aweme/v1/commit/item/digg/?aweme_id=" + aweme_id + "&type=" + type + "&retry_type=no_retry&from=3&" + self.helper.query(
             self.helper.default_variable(self.global_variable))
-        data = self.helper.request_get(self, url, session=session)
+        data = self.helper.request_get(url, session=session)
         return data.json()
 
     def view_post(self, aweme_id=1, session={}):
@@ -102,16 +99,16 @@ class Api():
         url = self.api_url + "aweme/v1/commit/follow/user/?user_id=" + str(user_id) + "&type=" + str(
             type) + "&retry_type=no_retry&from=3&" + self.helper.query(
             self.helper.default_variable(self.global_variable))
-        data = self.helper.request_get(self, url, session=session)
+        data = self.helper.request_get(url, session=session)
         return data.json()
 
     def user_info(self, user_id='6594722549190574086', session={}):
         url = self.api_url + "aweme/v1/user/?user_id=" + str(user_id) + "&" + self.helper.query(
             self.helper.default_variable(self.global_variable))
         if (session.__len__() > 0):
-            data = self.helper.request_get(self, url, session=session)
+            data = self.helper.request_get(url, session=session)
         else:
-            data = self.helper.request_get(self, url)
+            data = self.helper.request_get(url)
         return data.json()
 
     def user_video_list(self, user_id='6594722549190574086', session={}):
@@ -119,9 +116,9 @@ class Api():
             user_id) + "&max_cursor=0&type=0&count=20&pull_type=1&" + self.helper.query(
             self.helper.default_variable(self.global_variable))
         if (session.__len__() > 0):
-            data = self.helper.request_get(self, url, session=session)
+            data = self.helper.request_get(url, session=session)
         else:
-            data = self.helper.request_get(self, url)
+            data = self.helper.request_get(url)
         return data.json()
 
     def register(self, user={}, extra={}):
@@ -162,7 +159,7 @@ class Api():
         url = self.api_url + "aweme/v1/user/follower/list/?user_id=" + str(user_id) + "&count=" + str(
             count) + "&max_time=" + str(max_time) + "&retry_type=no_retry&" + self.helper.query(
             self.helper.default_variable(self.global_variable))
-        data = self.helper.request_get(self, url, session=session)
+        data = self.helper.request_get(url, session=session)
         return data.json()
 
     def following_list(self, user_id='6594722549190574086', count=20, max_time=None, session={}):
@@ -171,21 +168,21 @@ class Api():
         url = self.api_url + "aweme/v1/user/following/list/?user_id=" + str(user_id) + "&count=" + str(
             count) + "&max_time=" + str(max_time) + "&retry_type=no_retry&" + self.helper.query(
             self.helper.default_variable(self.global_variable))
-        data = self.helper.request_get(self, url, session=session)
+        data = self.helper.request_get(url, session=session)
         return data.json()
-
-    ''' Halil İbrahim\'e Teşekkürler  search_hashtag, list_hashtag '''
 
     def search_hashtag(self, text):
         url = self.api_url + "aweme/v1/challenge/search/?cursor=0&keyword=" + text + "&count=10&type=1&hot_search=0&" + self.helper.query(
             self.helper.default_variable(self.global_variable))
-        data = self.helper.request_get(url)
+        data = self.helper.request_get(url,
+                                       session=self._get_login_cookies())
         return data.json()
 
-    def list_hashtag(self, cid):
-        url = self.api_url + "aweme/v1/challenge/aweme/?ch_id=" + cid + "&count=20&offset=0&max_cursor=0&type=5&query_type=0&is_cold_start=1&pull_type=1&" + self.helper.query(
+    def list_hashtag(self, cid, count=20, offset=0):
+        url = self.api_url + f"aweme/v1/challenge/aweme/?ch_id={cid}&count={count}&offset={offset}&max_cursor=0&" \
+            f"type=5&query_type=0&is_cold_start=1&pull_type=1&" + self.helper.query(
             self.helper.default_variable(self.global_variable))
-        data = self.helper.request_get(self, url)
+        data = self.helper.request_get(url, session=self._get_login_cookies())
         return data.json()
 
     def getQRCode(self, user_id='6594722549190574086', schemaType=4, session={}):
@@ -198,3 +195,6 @@ class Api():
         url = self.api_url + "aweme/v1/fancy/qrcode/info/"
         data = self.helper.request_post(url, posts=data, costum_headers=costum_headers, session=session)
         return data.json()
+
+    def _get_login_cookies(self):
+        return self.active_user['cookies'] if 'cookies' in self.active_user else {}

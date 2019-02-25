@@ -10,11 +10,11 @@ from urllib import parse
 class Helper():
 
     @staticmethod
-    def request_get(url, costum_headers={}, session={}):
+    def request_get(url, custom_headers={}, session={}):
         cookies = ""
         for key, value in session.items():
             cookies += key + "=" + value + "; "
-        if session.__len__() < 1:
+        if len(session) < 1:
             cookies = "null = 1;"
         url_parse = parse.urlsplit(url)
 
@@ -28,7 +28,7 @@ class Helper():
             'sdk-version': "1",
             'Cookie': cookies
         }
-        for c_key, c_value in costum_headers.items():
+        for c_key, c_value in custom_headers.items():
             headers[c_key] = c_value
         return requests.get(url, headers=headers)
 
